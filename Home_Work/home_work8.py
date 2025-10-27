@@ -30,6 +30,8 @@ def insert_books():
     conn = create_connection()
     cursor = conn.cursor()
 
+    cursor.execute("DELETE FROM books")
+
     books_data = [
         ("451° по Фаренгейту", "Рэй Брэдбери", 1953, "Антиутопия", 249, 5),
         ("Тень горы", "Грегори Дэвид Робертс", 2015, "Приключенческий роман", 864, 3),
@@ -38,8 +40,8 @@ def insert_books():
         ("Цветы для Элджернона", "Дэниел Киз", 1959, "Фантастика", 320, 6),
         ("Американские боги", "Нил Гейман", 2001, "Фэнтези", 592, 4),
         ("Алхимик", "Пауло Коэльо", 1988, "Философская притча", 224, 5),
-        ("Бойцовский клуб", "Чак Паланик", 1996, "Роман", 218, 3),
-        ("Дюна", "Фрэнк Герберт", 1965, "Научная фантастика", 688, 7),
+        ("Бойцовский клуб", "Пауло Коэльо", 1996, "Роман", 218, 3),
+        ("Дюна", "Пауло Коэльо", 1965, "Научная фантастика", 688, 7),
         ("Мёртвые души", "Николай Гоголь", 1842, "Сатира", 352, 2)
     ]
 
@@ -72,7 +74,7 @@ def get_books_by_author(author):
         SELECT name, publication_year, genre, number_of_pages, number_of_copies
         FROM books
         WHERE author = ?
-        ORDER BY name ASC;
+        ORDER BY LTRIM(RTRIM(name)) COLLATE NOCASE ASC;
     """, (author,))
 
     books = cursor.fetchall()
@@ -87,8 +89,9 @@ def get_books_by_author(author):
             print(f"- {name} ({year}), жанр: {genre}, страниц: {pages}, копий: {copies}")
 
 
+
 if __name__ == "__main__":
     create_table()
     insert_books()
     delete_book("451° по Фаренгейту")
-    get_books_by_author("Мёртвые души")
+    get_books_by_author("Пауло Коэльо")
