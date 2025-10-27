@@ -2,7 +2,7 @@ import sqlite3
 
 
 def create_connection():
-    return sqlite3.connect("../library.db")
+    return sqlite3.connect("library.db")
 
 
 def create_table():
@@ -64,7 +64,31 @@ def delete_book(book_name):
     print(f"Книга '{book_name}' удалена!")
 
 
+def get_books_by_author(author):
+    conn = create_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT name, publication_year, genre, number_of_pages, number_of_copies
+        FROM books
+        WHERE author = ?
+        ORDER BY name ASC;
+    """, (author,))
+
+    books = cursor.fetchall()
+    conn.close()
+
+    if not books:
+        print(f"Книги автора '{author}' не найдены.")
+    else:
+        print(f"Книги автора '{author}':")
+        for book in books:
+            name, year, genre, pages, copies = book
+            print(f"- {name} ({year}), жанр: {genre}, страниц: {pages}, копий: {copies}")
+
+
 if __name__ == "__main__":
     create_table()
     insert_books()
     delete_book("451° по Фаренгейту")
+    get_books_by_author("Мёртвые души")
